@@ -572,7 +572,7 @@ urlEncodeFormStable = urlEncodeParams . sortOn fst . toList
 urlEncodeParams :: [(Text, Text)] -> BSL.ByteString
 urlEncodeParams = toLazyByteString . mconcat . intersperse (shortByteString "&") . map encodePair
   where
-    escape = urlEncodeBuilder True . Text.encodeUtf8
+    escape = urlEncodeBuilder False . Text.encodeUtf8
 
     encodePair (k, "") = escape k
     encodePair (k, v)  = escape k <> shortByteString "=" <> escape v
@@ -619,7 +619,7 @@ urlDecodeParams bs = traverse parsePair pairs
   where
     pairs = map (BSL8.split '=') (BSL8.split '&' bs)
 
-    unescape = Text.decodeUtf8With lenientDecode . urlDecode True . BSL.toStrict
+    unescape = Text.decodeUtf8With lenientDecode . urlDecode False . BSL.toStrict
 
     parsePair p =
       case map unescape p of
